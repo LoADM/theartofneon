@@ -1,0 +1,153 @@
+---
+import { getCollection } from 'astro:content';
+import Layout from '../layouts/Layout.astro';
+
+const products = await getCollection('products');
+---
+
+<Layout 
+  title="Neon Signs Gallery - The Art of the Glow"
+  description="Browse our complete collection of custom LED neon signs. Find the perfect neon sign for your home, business, or special event."
+  image="https://images.pexels.com/photos/1308881/pexels-photo-1308881.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
+>
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <!-- Header -->
+    <div class="text-center mb-16">
+      <h1 class="text-4xl md:text-6xl font-display font-bold text-white mb-6">
+        Neon Signs <span class="text-neon-pink animate-neon-glow">Gallery</span>
+      </h1>
+      <p class="text-xl text-gray-300 max-w-3xl mx-auto leading-relaxed">
+        Discover our stunning collection of custom LED neon signs. From personalized designs to trending styles, find the perfect glow for your space.
+      </p>
+    </div>
+
+    <!-- Products Grid -->
+    <section>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+        {products.map((product, index) => (
+          <div class={`product-card ${index % 3 === 0 ? 'card-background-purple' : index % 3 === 1 ? 'card-background-green' : 'card-background-cyan'} transition-all duration-500 group`}>
+            <a href={product.data.url} target="_blank" rel="noopener noreferrer" class="block">
+              <div class="relative overflow-hidden">
+                <img
+                  src={product.data.image}
+                  alt={product.data.title}
+                  class="w-full h-64 object-cover transition-transform duration-500 group-hover:scale-105"
+                  loading="lazy"
+                />
+                <div class="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent opacity-80"></div>
+                <div class="absolute inset-0 bg-neon-cyan/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                
+                <!-- External link indicator -->
+                <div class="absolute top-4 right-4 bg-black/50 rounded-full p-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                  <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
+                  </svg>
+                </div>
+              </div>
+              
+              <div class="p-6">
+                <h3 class="text-lg font-display font-bold text-white mb-3 group-hover:text-neon-cyan transition-colors duration-300">
+                  {product.data.title}
+                </h3>
+                
+                <p class="text-gray-300 text-sm leading-relaxed group-hover:text-gray-200 transition-colors duration-300 mb-4">
+                  {product.data.description}
+                </p>
+                
+                <div class="flex items-center justify-between">
+                  <div class="flex flex-wrap gap-1">
+                    {product.data.tags.slice(0, 2).map((tag) => (
+                      <span class="text-xs bg-neon-green/20 text-neon-green px-2 py-1 rounded">
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
+                  <div class="flex items-center text-neon-pink text-sm font-semibold">
+                    <span class="mr-1">Shop Now</span>
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                    </svg>
+                  </div>
+                </div>
+              </div>
+            </a>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <!-- Call to Action -->
+    <section class="text-center mt-20">
+      <div class="card-background p-8 backdrop-blur-sm">
+        <h2 class="text-3xl font-display font-bold text-white mb-4">
+          Can't Find What You're Looking For?
+        </h2>
+        <p class="text-gray-300 mb-6 max-w-2xl mx-auto">
+          We specialize in custom designs! Contact us to create a unique neon sign tailored specifically to your vision.
+        </p>
+        <a href="https://myneonstore.com/pages/custom-neon-form-v2" target="_blank" rel="noopener noreferrer" class="neon-button">
+          Request Custom Design
+        </a>
+      </div>
+    </section>
+  </div>
+</Layout>
+
+<style>
+  .card-background-purple {
+    background-color: #10141f;
+    background-image: 
+      radial-gradient(circle at 20% 80%, rgba(157, 78, 221, 0.15) 0%, transparent 50%),
+      radial-gradient(circle at 80% 20%, rgba(255, 0, 255, 0.1) 0%, transparent 50%),
+      radial-gradient(circle at 40% 40%, rgba(157, 78, 221, 0.08) 0%, transparent 50%);
+  }
+  
+  .card-background-green {
+    background-color: #10141f;
+    background-image: 
+      radial-gradient(circle at 20% 80%, rgba(57, 255, 20, 0.15) 0%, transparent 50%),
+      radial-gradient(circle at 80% 20%, rgba(0, 255, 127, 0.1) 0%, transparent 50%),
+      radial-gradient(circle at 40% 40%, rgba(57, 255, 20, 0.08) 0%, transparent 50%);
+  }
+  
+  .card-background-cyan {
+    background-color: #10141f;
+    background-image: 
+      radial-gradient(circle at 20% 80%, rgba(0, 255, 255, 0.15) 0%, transparent 50%),
+      radial-gradient(circle at 80% 20%, rgba(0, 191, 255, 0.1) 0%, transparent 50%),
+      radial-gradient(circle at 40% 40%, rgba(0, 255, 255, 0.08) 0%, transparent 50%);
+  }
+  
+  .card-background {
+    background-color: #10141f;
+    background-image: 
+      radial-gradient(circle at 20% 80%, rgba(255, 0, 255, 0.1) 0%, transparent 50%),
+      radial-gradient(circle at 80% 20%, rgba(0, 255, 255, 0.1) 0%, transparent 50%),
+      radial-gradient(circle at 40% 40%, rgba(57, 255, 20, 0.1) 0%, transparent 50%);
+  }
+  
+  .product-card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+  
+  .product-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 
+      0 20px 40px rgba(0, 255, 255, 0.15),
+      0 0 0 1px rgba(255, 0, 255, 0.2),
+      0 0 20px rgba(0, 255, 255, 0.1);
+  }
+  
+  .neon-button {
+    @apply inline-block bg-gradient-to-r from-neon-pink to-neon-cyan text-white font-semibold px-8 py-3 rounded-lg;
+    transition: all 0.3s ease;
+    box-shadow: 0 0 20px rgba(255, 0, 255, 0.3);
+  }
+  
+  .neon-button:hover {
+    box-shadow: 
+      0 0 30px rgba(255, 0, 255, 0.5),
+      0 0 40px rgba(0, 255, 255, 0.3);
+    transform: translateY(-2px);
+  }
+</style>

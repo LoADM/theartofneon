@@ -1,0 +1,164 @@
+---
+import { getCollection } from 'astro:content';
+import Layout from '../layouts/Layout.astro';
+
+const posts = await getCollection('blog');
+const sortedPosts = posts.sort((a, b) => b.data.publishDate.getTime() - a.data.publishDate.getTime());
+---
+
+<Layout 
+  title="The Art of the Glow - Neon Signs Blog"
+  description="Discover the fascinating world of neon signs, from LED technology to custom designs. Expert insights, guides, and inspiration for your next neon project."
+  image="https://images.pexels.com/photos/1308881/pexels-photo-1308881.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
+>
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <!-- Blog Posts Masonry Grid -->
+    <section>
+      <div class="columns-1 sm:columns-2 lg:columns-3 xl:columns-4 gap-3 space-y-3">
+        {sortedPosts.map((post, index) => (
+          <article class="blog-card break-inside-avoid">
+            <a href={`/blog/${post.slug}`} class="block">
+              <div class={`relative overflow-hidden ${index % 2 === 0 ? 'card-background-purple' : 'card-background-green'} transition-all duration-500 group`}>
+                <div class="relative">
+                  <img
+                    src={post.data.image}
+                    alt={post.data.imageAlt}
+                    class="w-full h-auto object-cover transition-transform duration-500 group-hover:scale-105"
+                    loading="lazy"
+                  />
+                  <div class="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent opacity-80"></div>
+                  <div class="absolute inset-0 bg-neon-cyan/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                </div>
+                
+                <div class="p-6">
+                  <div class="flex flex-wrap gap-2 mb-3">
+                    {post.data.tags.map((tag) => (
+                      <span class="text-xs bg-neon-pink/20 text-neon-pink px-2 py-1 rounded">
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
+                  
+                  <h3 class="text-lg font-display font-bold text-white mb-3 group-hover:text-neon-cyan transition-colors duration-300">
+                    {post.data.title}
+                  </h3>
+                  
+                  <p class="text-gray-300 text-sm leading-relaxed group-hover:text-gray-200 transition-colors duration-300 mb-4">
+                    {post.data.description}
+                  </p>
+                  
+                  <div class="flex items-center justify-between">
+                    <div class="text-xs text-gray-400">
+                      <span>By {post.data.author}</span>
+                      <span class="mx-1">•</span>
+                      <time datetime={post.data.publishDate.toISOString()}>
+                        {post.data.publishDate.toLocaleDateString('en-US', { 
+                          year: 'numeric', 
+                          month: 'short', 
+                          day: 'numeric' 
+                        })}
+                      </time>
+                    </div>
+                    <div class="w-2 h-2 bg-neon-green rounded-full animate-pulse"></div>
+                  </div>
+                </div>
+              </div>
+            </a>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <!-- Call to Action -->
+    <section class="text-center mt-20">
+      <div class="card-background p-8 backdrop-blur-sm">
+        <h2 class="text-3xl font-display font-bold text-white mb-4">
+          Ready to Create Your Own <span class="text-neon-pink animate-neon-glow">Neon Magic</span>?
+        </h2>
+        <p class="text-gray-300 mb-6 max-w-2xl mx-auto">
+          Discover the latest in LED neon technology and bring your creative vision to life with custom signs
+        </p>
+        <a href="https://myneonstore.com" target="_blank" rel="noopener noreferrer" class="neon-button">
+          Shop Now at myneonstore.com
+        </a>
+      </div>
+    </section>
+  </div>
+</Layout>
+
+<style>
+  .card-background-purple {
+    background-color: #10141f;
+    background-image: 
+      radial-gradient(circle at 20% 80%, rgba(157, 78, 221, 0.15) 0%, transparent 50%),
+      radial-gradient(circle at 80% 20%, rgba(255, 0, 255, 0.1) 0%, transparent 50%),
+      radial-gradient(circle at 40% 40%, rgba(157, 78, 221, 0.08) 0%, transparent 50%);
+  }
+  
+  .card-background-green {
+    background-color: #10141f;
+    background-image: 
+      radial-gradient(circle at 20% 80%, rgba(57, 255, 20, 0.15) 0%, transparent 50%),
+      radial-gradient(circle at 80% 20%, rgba(0, 255, 127, 0.1) 0%, transparent 50%),
+      radial-gradient(circle at 40% 40%, rgba(57, 255, 20, 0.08) 0%, transparent 50%);
+  }
+  
+  .card-background {
+    background-color: #10141f;
+    background-image: 
+      radial-gradient(circle at 20% 80%, rgba(255, 0, 255, 0.1) 0%, transparent 50%),
+      radial-gradient(circle at 80% 20%, rgba(0, 255, 255, 0.1) 0%, transparent 50%),
+      radial-gradient(circle at 40% 40%, rgba(57, 255, 20, 0.1) 0%, transparent 50%);
+  }
+  
+  .blog-card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    margin-bottom: 1.5rem;
+  }
+  
+  .blog-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 
+      0 20px 40px rgba(0, 255, 255, 0.15),
+      0 0 0 1px rgba(255, 0, 255, 0.2),
+      0 0 20px rgba(0, 255, 255, 0.1);
+  }
+  
+  .neon-button {
+    @apply inline-block bg-gradient-to-r from-neon-pink to-neon-cyan text-white font-semibold px-8 py-3;
+    transition: all 0.3s ease;
+    box-shadow: 0 0 20px rgba(255, 0, 255, 0.3);
+  }
+  
+  .neon-button:hover {
+    box-shadow: 
+      0 0 30px rgba(255, 0, 255, 0.5),
+      0 0 40px rgba(0, 255, 255, 0.3);
+    transform: translateY(-2px);
+  }
+  
+  /* Masonry grid responsive adjustments */
+  @media (max-width: 640px) {
+    .columns-1 {
+      column-count: 1;
+    }
+  }
+  
+  @media (min-width: 641px) and (max-width: 1024px) {
+    .sm\:columns-2 {
+      column-count: 2;
+    }
+  }
+  
+  @media (min-width: 1025px) and (max-width: 1280px) {
+    .lg\:columns-3 {
+      column-count: 3;
+    }
+  }
+  
+  @media (min-width: 1281px) {
+    .xl\:columns-4 {
+      column-count: 4;
+    }
+  }
+</style>

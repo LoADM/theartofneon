@@ -1,0 +1,198 @@
+---
+import { getCollection } from 'astro:content';
+import Layout from '../layouts/Layout.astro';
+
+const url = new URL(Astro.request.url);
+const query = url.searchParams.get('q') || '';
+const tag = url.searchParams.get('tag') || '';
+
+const posts = await getCollection('blog');
+
+let filteredPosts = posts;
+let searchTitle = 'Search Results';
+let searchDescription = 'Search results for blog posts';
+
+if (query) {
+  filteredPosts = posts.filter(post => 
+    post.data.title.toLowerCase().includes(query.toLowerCase()) ||
+    post.data.description.toLowerCase().includes(query.toLowerCase()) ||
+    post.data.tags.some(t => t.toLowerCase().includes(query.toLowerCase()))
+  );
+  searchTitle = `Search Results for "${query}"`;
+  searchDescription = `Search results for "${query}"`;
+} else if (tag) {
+  filteredPosts = posts.filter(post => 
+    post.data.tags.some(t => t.toLowerCase() === tag.toLowerCase())
+  );
+  searchTitle = `Posts tagged with "${tag}"`;
+  searchDescription = `All posts tagged with "${tag}"`;
+}
+
+const sortedPosts = filteredPosts.sort((a, b) => b.data.publishDate.getTime() - a.data.publishDate.getTime());
+---
+
+<Layout 
+  title={searchTitle}
+  description={searchDescription}
+>
+  <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <!-- Search Header -->
+    <div class="text-center mb-12">
+      <h1 class="text-4xl md:text-5xl font-display font-bold text-white mb-6">
+        {query ? (
+          <>Search Results for <span class="text-neon-cyan">"{query}"</span></>
+        ) : tag ? (
+          <>Posts tagged with <span class="text-neon-pink">"{tag}"</span></>
+        ) : (
+          <span class="text-neon-cyan">Search</span>
+        )}
+      </h1>
+      <p class="text-xl text-gray-300">
+        {sortedPosts.length} {sortedPosts.length === 1 ? 'result' : 'results'} found
+      </p>
+    </div>
+
+    <!-- Search Bar -->
+    <div class="max-w-2xl mx-auto mb-12">
+      <form class="relative">
+        <input
+          type="text"
+          name="q"
+          value={query}
+          placeholder="Search articles..."
+          class="w-full px-6 py-4 bg-dark-secondary border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-neon-cyan transition-colors duration-300 text-lg"
+        />
+        <button
+          type="submit"
+          class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-neon-cyan transition-colors duration-300"
+        >
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+          </svg>
+        </button>
+      </form>
+    </div>
+
+    {sortedPosts.length > 0 ? (
+      <!-- Results Grid -->
+      <section>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {sortedPosts.map((post) => (
+            <article class="blog-card">
+              <a href={`/blog/${post.slug}`} class="block">
+                <div class="relative overflow-hidden card-background transition-all duration-500 group">
+                  <div class="relative">
+                    <img
+                      src={post.data.image}
+                      alt={post.data.imageAlt}
+                      class="w-full h-48 object-cover transition-transform duration-500 group-hover:scale-105"
+                      loading="lazy"
+                    />
+                    <div class="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent opacity-80"></div>
+                    <div class="absolute inset-0 bg-neon-cyan/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                  </div>
+                  
+                  <div class="p-6">
+                    <div class="flex flex-wrap gap-2 mb-3">
+                      {post.data.tags.map((postTag) => (
+                        <span class={`text-xs px-2 py-1 rounded ${
+                          postTag.toLowerCase() === tag.toLowerCase() 
+                            ? 'bg-neon-pink/30 text-neon-pink' 
+                            : 'bg-neon-green/20 text-neon-green'
+                        }`}>
+                          {postTag}
+                        </span>
+                      ))}
+                    </div>
+                    
+                    <h3 class="text-lg font-display font-bold text-white mb-3 group-hover:text-neon-cyan transition-colors duration-300">
+                      {post.data.title}
+                    </h3>
+                    
+                    <p class="text-gray-300 text-sm leading-relaxed group-hover:text-gray-200 transition-colors duration-300 mb-4">
+                      {post.data.description}
+                    </p>
+                    
+                    <div class="flex items-center justify-between">
+                      <div class="text-xs text-gray-400">
+                        <span>By {post.data.author}</span>
+                        <span class="mx-1">•</span>
+                        <time datetime={post.data.publishDate.toISOString()}>
+                          {post.data.publishDate.toLocaleDateString('en-US', { 
+                            year: 'numeric', 
+                            month: 'short', 
+                            day: 'numeric' 
+                          })}
+                        </time>
+                      </div>
+                      <div class="w-2 h-2 bg-neon-green rounded-full animate-pulse"></div>
+                    </div>
+                  </div>
+                </div>
+              </a>
+            </article>
+          ))}
+        </div>
+      </section>
+    ) : (
+      <!-- No Results -->
+      <div class="text-center py-16">
+        <div class="bg-dark-secondary/50 rounded-lg p-12 border border-neon-orange/20">
+          <svg class="w-16 h-16 text-gray-400 mx-auto mb-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 12h6m-6-4h6m2 5.291A7.962 7.962 0 0112 15c-2.34 0-4.291-1.007-5.824-2.562M15 17H9v-2.5A3.5 3.5 0 0112.5 11H15v6z"></path>
+          </svg>
+          <h2 class="text-2xl font-display font-bold text-white mb-4">
+            No Results Found
+          </h2>
+          <p class="text-gray-300 mb-6">
+            {query ? (
+              <>We couldn't find any articles matching "<span class="text-neon-cyan">{query}</span>"</>
+            ) : tag ? (
+              <>No articles found with the tag "<span class="text-neon-pink">{tag}</span>"</>
+            ) : (
+              'Try searching for something else'
+            )}
+          </p>
+          <a href="/" class="neon-button">
+            Browse All Articles
+          </a>
+        </div>
+      </div>
+    )}
+  </div>
+</Layout>
+
+<style>
+  .card-background {
+    background-color: #10141f;
+    background-image: 
+      radial-gradient(circle at 20% 80%, rgba(157, 78, 221, 0.15) 0%, transparent 50%),
+      radial-gradient(circle at 80% 20%, rgba(255, 0, 255, 0.1) 0%, transparent 50%),
+      radial-gradient(circle at 40% 40%, rgba(157, 78, 221, 0.08) 0%, transparent 50%);
+  }
+  
+  .blog-card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+  
+  .blog-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 
+      0 20px 40px rgba(0, 255, 255, 0.15),
+      0 0 0 1px rgba(255, 0, 255, 0.2),
+      0 0 20px rgba(0, 255, 255, 0.1);
+  }
+  
+  .neon-button {
+    @apply inline-block bg-gradient-to-r from-neon-pink to-neon-cyan text-white font-semibold px-8 py-3 rounded-lg;
+    transition: all 0.3s ease;
+    box-shadow: 0 0 20px rgba(255, 0, 255, 0.3);
+  }
+  
+  .neon-button:hover {
+    box-shadow: 
+      0 0 30px rgba(255, 0, 255, 0.5),
+      0 0 40px rgba(0, 255, 255, 0.3);
+    transform: translateY(-2px);
+  }
+</style>

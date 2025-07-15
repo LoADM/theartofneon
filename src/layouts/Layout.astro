@@ -1,0 +1,277 @@
+---
+import { getCollection } from 'astro:content';
+
+// Get all blog posts to extract top tags
+const posts = await getCollection('blog');
+const allTags = posts.flatMap(post => post.data.tags);
+const tagCounts = allTags.reduce((acc, tag) => {
+  acc[tag] = (acc[tag] || 0) + 1;
+  return acc;
+}, {});
+const topTags = Object.entries(tagCounts)
+  .sort(([,a], [,b]) => b - a)
+  .slice(0, 8)
+  .map(([tag]) => tag);
+
+export interface Props {
+  title: string;
+  description: string;
+  image?: string;
+  type?: string;
+}
+
+const { title, description, image, type = 'website' } = Astro.props;
+const canonicalURL = new URL(Astro.url.pathname, Astro.site);
+---
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="canonical" href={canonicalURL}>
+  
+  <!-- Primary Meta Tags -->
+  <title>{title}</title>
+  <meta name="title" content={title}>
+  <meta name="description" content={description}>
+  <meta name="generator" content={Astro.generator}>
+  
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content={type}>
+  <meta property="og:url" content={Astro.url}>
+  <meta property="og:title" content={title}>
+  <meta property="og:description" content={description}>
+  {image && <meta property="og:image" content={image}>}
+  
+  <!-- Twitter -->
+  <meta property="twitter:card" content="summary_large_image">
+  <meta property="twitter:url" content={Astro.url}>
+  <meta property="twitter:title" content={title}>
+  <meta property="twitter:description" content={description}>
+  {image && <meta property="twitter:image" content={image}>}
+  
+  <!-- Favicon -->
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+  
+  <!-- JSON-LD Schema -->
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": "Futuristic Web Projects",
+      "description": "Showcase of innovative web development projects with cutting-edge technology and neon aesthetics",
+      "url": "https://the-art-of-the-glow.com"
+    }
+  </script>
+</head>
+<body class="bg-black text-white min-h-screen">
+  <nav class="bg-black border-b border-transparent sticky top-0 z-50">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-20 md:h-24">
+        <!-- Hamburger Menu Button (Mobile) -->
+        <button id="hamburger-btn" class="text-white hover:text-neon-cyan transition-colors duration-300">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+          </svg>
+        </button>
+        
+        <!-- Center Title Image -->
+        <div class="absolute left-1/2 transform -translate-x-1/2">
+          <a href="/">
+            <img 
+              src="/title-new.png" 
+              alt="The Art of the Glow" 
+              class="h-16 md:h-20 w-auto max-w-none"
+            />
+          </a>
+        </div>
+        
+        <!-- Shop Button -->
+        <a 
+          href="https://myneonstore.com" 
+          target="_blank" 
+          rel="noopener noreferrer"
+          class="neon-store-button text-xs md:text-sm font-bold py-1.5 px-3 border-2 border-neon-cyan text-neon-cyan rounded-lg transition-all duration-300 ease-in-out hover:bg-neon-cyan hover:text-dark whitespace-nowrap"
+        >
+          Shop myneonstore.com
+        </a>
+      </div>
+    </div>
+  </nav>
+  
+  <!-- Slide-in Menu -->
+  <div id="slide-menu" class="fixed top-0 left-0 h-full w-80 bg-black z-50 transform -translate-x-full transition-transform duration-300 ease-in-out border-r border-neon-cyan/20">
+    <div class="flex flex-col h-full p-6">
+      <!-- Close Button -->
+      <div class="flex justify-end mb-8">
+        <button id="close-menu-btn" class="text-white hover:text-neon-cyan transition-colors duration-300">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+          </svg>
+        </button>
+      </div>
+      
+      <!-- Menu Title -->
+      <h2 class="text-3xl font-display font-bold text-neon-cyan mb-8 animate-neon-glow">
+        MENU
+      </h2>
+      
+      <!-- Home Link -->
+      <div class="mb-8">
+        <a href="/" class="menu-link block text-neon-cyan hover:text-white transition-colors duration-300 text-lg">
+          Home
+        </a>
+      </div>
+      
+      
+      <!-- Search Section -->
+      <div class="mb-8">
+        <h3 class="text-lg font-display text-gray-400 mb-4 uppercase tracking-wider">
+          Search
+        </h3>
+        <div class="relative">
+          <input
+            type="text"
+            id="search-input"
+            placeholder="Search articles..."
+            class="w-full px-4 py-3 bg-dark-secondary border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-neon-cyan transition-colors duration-300"
+          />
+          <button
+            id="search-button"
+            class="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-neon-cyan transition-colors duration-300"
+          >
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+            </svg>
+          </button>
+        </div>
+      </div>
+      
+      <!-- Top Tags Section -->
+      <div class="mb-8">
+        <h3 class="text-lg font-display text-gray-400 mb-4 uppercase tracking-wider">
+          Top Tags
+        </h3>
+        <div class="flex flex-wrap gap-2">
+          {topTags.map((tag) => (
+            <button
+              class="tag-button text-xs bg-neon-pink/20 text-neon-pink px-3 py-1 rounded-full hover:bg-neon-pink/30 transition-colors duration-300 cursor-pointer"
+              data-tag={tag}
+            >
+              {tag}
+            </button>
+          ))}
+        </div>
+      </div>
+      
+      <!-- Neon Signs Gallery Link -->
+      <div class="mb-8">
+        <a href="/gallery" class="menu-link block text-neon-pink hover:text-white transition-colors duration-300 text-lg">
+          Neon Signs Gallery
+        </a>
+      </div>
+      
+      <!-- Divider -->
+      <div class="border-t border-gray-600 my-6"></div>
+      
+      <!-- Admin Section -->
+      <div>
+        <a href="/admin" class="menu-link block text-neon-cyan hover:text-white transition-colors duration-300 text-lg">
+          Admin Page
+        </a>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Menu Overlay -->
+  <div id="menu-overlay" class="fixed inset-0 bg-black/50 z-40 opacity-0 invisible transition-all duration-300"></div>
+  
+  <main>
+    <slot />
+  </main>
+  
+  <footer class="bg-dark-secondary/30 mt-20 py-12 border-t border-neon-cyan/20">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+      <p class="text-gray-400">
+        © 2025 The Art of the Glow. Illuminating the world of neon artistry.
+      </p>
+    </div>
+  </footer>
+</body>
+
+<script>
+  // Slide menu functionality
+  const hamburgerBtn = document.getElementById('hamburger-btn');
+  const slideMenu = document.getElementById('slide-menu');
+  const closeMenuBtn = document.getElementById('close-menu-btn');
+  const menuOverlay = document.getElementById('menu-overlay');
+  const menuLinks = document.querySelectorAll('.menu-link');
+
+  hamburgerBtn?.addEventListener('click', () => {
+    slideMenu?.classList.remove('-translate-x-full');
+    menuOverlay?.classList.remove('opacity-0', 'invisible');
+    menuOverlay?.classList.add('opacity-100', 'visible');
+  });
+
+  function closeMenu() {
+    slideMenu?.classList.add('-translate-x-full');
+    menuOverlay?.classList.remove('opacity-100', 'visible');
+    menuOverlay?.classList.add('opacity-0', 'invisible');
+  }
+
+  closeMenuBtn?.addEventListener('click', closeMenu);
+  menuOverlay?.addEventListener('click', closeMenu);
+
+  menuLinks.forEach(link => {
+    link.addEventListener('click', () => {
+      closeMenu();
+    });
+  });
+
+  // Search functionality
+  const searchInput = document.getElementById('search-input');
+  const searchButton = document.getElementById('search-button');
+  
+  function performSearch() {
+    const query = searchInput?.value.trim();
+    if (query) {
+      window.location.href = `/search?q=${encodeURIComponent(query)}`;
+    }
+  }
+  
+  searchButton?.addEventListener('click', performSearch);
+  searchInput?.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') {
+      performSearch();
+    }
+  });
+  
+  // Tag functionality
+  const tagButtons = document.querySelectorAll('.tag-button');
+  tagButtons.forEach(button => {
+    button.addEventListener('click', () => {
+      const tag = button.getAttribute('data-tag');
+      if (tag) {
+        window.location.href = `/search?tag=${encodeURIComponent(tag)}`;
+        closeMenu();
+      }
+    });
+  });
+</script>
+</html>
+
+<style>
+  .neon-store-button {
+    box-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
+  }
+  
+  .neon-store-button:hover {
+    box-shadow: 0 0 20px rgba(0, 255, 255, 0.6), 0 0 30px rgba(0, 255, 255, 0.4);
+  }
+</style>

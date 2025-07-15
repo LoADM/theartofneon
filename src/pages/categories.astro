@@ -1,0 +1,59 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout 
+  title="Search by Category - The Art of the Glow"
+  description="Browse neon sign articles by category"
+>
+  <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <div class="text-center mb-16">
+      <h1 class="text-4xl md:text-5xl font-display font-bold text-white mb-6">
+        Search by <span class="text-neon-cyan animate-neon-glow">Category</span>
+      </h1>
+      <p class="text-xl text-gray-300 max-w-3xl mx-auto leading-relaxed">
+        Explore neon sign content organized by topics and themes
+      </p>
+    </div>
+
+    <!-- Categories Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+      <div class="category-card bg-dark-secondary/50 rounded-lg p-6 border border-neon-pink/20 hover:border-neon-pink/40 transition-all duration-300">
+        <h3 class="text-xl font-display font-bold text-neon-pink mb-3">History</h3>
+        <p class="text-gray-300 mb-4">Discover the fascinating origins and evolution of neon signs</p>
+        <span class="text-sm text-gray-400">1 article</span>
+      </div>
+
+      <div class="category-card bg-dark-secondary/50 rounded-lg p-6 border border-neon-cyan/20 hover:border-neon-cyan/40 transition-all duration-300">
+        <h3 class="text-xl font-display font-bold text-neon-cyan mb-3">DIY</h3>
+        <p class="text-gray-300 mb-4">Learn how to create your own stunning neon signs</p>
+        <span class="text-sm text-gray-400">1 article</span>
+      </div>
+
+      <div class="category-card bg-dark-secondary/50 rounded-lg p-6 border border-neon-green/20 hover:border-neon-green/40 transition-all duration-300">
+        <h3 class="text-xl font-display font-bold text-neon-green mb-3">Contemporary Art</h3>
+        <p class="text-gray-300 mb-4">Explore modern neon art installations and exhibitions</p>
+        <span class="text-sm text-gray-400">1 article</span>
+      </div>
+    </div>
+
+    <!-- Coming Soon -->
+    <div class="text-center mt-16">
+      <div class="bg-dark-secondary/50 rounded-lg p-8 border border-neon-orange/20">
+        <h2 class="text-2xl font-display font-bold text-white mb-4">
+          More Categories <span class="text-neon-orange">Coming Soon</span>
+        </h2>
+        <p class="text-gray-300">
+          We're working on adding more category filters and search functionality
+        </p>
+      </div>
+    </div>
+  </div>
+</Layout>
+
+<style>
+  .category-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(255, 255, 255, 0.1);
+  }
+</style>
